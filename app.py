@@ -17,9 +17,10 @@ st.set_page_config(
 st.markdown("""
 <style>
 /* Base */
-html, body, [class*="css"] {
-    font-size: 22px !important;
+html, body {
+    font-size: 16px !important;
 }
+
 
 /* Header spacing */
 .block-container {
