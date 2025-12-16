@@ -31,6 +31,13 @@ h4 { font-size: 22px !important; }
 [data-testid="stSidebar"] {
     font-size: 18px !important;
 }
+            .header-box {
+    background-color: #f5f7fa;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -82,13 +89,17 @@ peer_df = df[
 # --------------------------------------------------
 # HEADER
 # --------------------------------------------------
-st.title("AI-Driven Detection of Suspicious Related-Party Transactions & Arm’s Length Pricing Deviations")
-
 st.markdown("""
-**Objective:**  
+<div class="header-box">
+<h1>AI-Driven Detection of Suspicious Related-Party Transactions & Arm’s Length Pricing Deviations</h1>
+
+<p><b>Objective:</b><br>
 Identify potentially non–arm’s length related-party transactions using financial-statement ratios,
 peer benchmarking, and AI-based anomaly detection.
-""")
+</p>
+</div>
+""", unsafe_allow_html=True)
+
 
 # --------------------------------------------------
 # COMPANY SNAPSHOT
