@@ -12,53 +12,24 @@ st.set_page_config(
 )
 
 # --------------------------------------------------
-# GLOBAL CSS — ONLY FONT CHANGES
+# GLOBAL CSS — ORIGINAL SMALLER FONTS (FIRST VERSION)
 # --------------------------------------------------
 st.markdown("""
 <style>
-/* Base */
-html, body {
-    font-size: 16px !important;
+html, body, [class*="css"]  {
+    font-size: 18px !important;
 }
+h1 { font-size: 34px !important; }
+h2 { font-size: 28px !important; }
+h3 { font-size: 24px !important; }
+h4 { font-size: 22px !important; }
 
-
-/* Header spacing */
-.block-container {
-    padding-top: 1.4rem !important;
-}
-
-/* Header box */
-.header-box {
-    background: linear-gradient(90deg, #0f2027, #203a43, #2c5364);
-    padding: 30px;
-    border-radius: 16px;
-    margin-bottom: 30px;
-}
-
-/* Title & objective */
-.header-box h1 { font-size: 48px !important; }
-.header-box h3 { font-size: 34px !important; }
-.header-box p  { font-size: 24px !important; }
-
-/* Company snapshot metrics — BIGGER */
 [data-testid="stMetricValue"] {
-    font-size: 44px !important;
-    font-weight: 800;
-}
-
-[data-testid="stMetricLabel"] {
     font-size: 26px !important;
 }
 
-/* Tabs font size */
-button[data-baseweb="tab"] > div {
-    font-size: 26px !important;
-    font-weight: 600;
-}
-
-/* Sidebar */
-[data-testid="stSidebar"] * {
-    font-size: 22px !important;
+[data-testid="stSidebar"] {
+    font-size: 18px !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -69,7 +40,7 @@ button[data-baseweb="tab"] > div {
 df = pd.read_csv("AI_RPT_ArmLength_MultiIndustry_Dataset.csv")
 
 # --------------------------------------------------
-# SIDEBAR
+# SIDEBAR FILTERS
 # --------------------------------------------------
 st.sidebar.title("🔍 Filters")
 
@@ -88,6 +59,7 @@ year = st.sidebar.selectbox(
     sorted(df["Year"].unique(), reverse=True)
 )
 
+# Threshold slider (0–1)
 risk_threshold = st.sidebar.slider(
     "Risk Sensitivity Threshold",
     min_value=0.0,
@@ -108,19 +80,15 @@ peer_df = df[
 ]
 
 # --------------------------------------------------
-# HEADER + OBJECTIVE
+# HEADER
 # --------------------------------------------------
-st.markdown("""
-<div class="header-box">
-<h1>AI-Driven Detection of Suspicious Related-Party Transactions & Arm’s Length Pricing Deviations</h1>
+st.title("AI-Driven Detection of Suspicious Related-Party Transactions & Arm’s Length Pricing Deviations")
 
-<h3>🎯 Objective</h3>
-<p>
-Identify potentially non–arm’s length related-party transactions using
-<b>financial-statement ratios, peer benchmarking, and AI-based anomaly detection.</b>
-</p>
-</div>
-""", unsafe_allow_html=True)
+st.markdown("""
+**Objective:**  
+Identify potentially non–arm’s length related-party transactions using financial-statement ratios,
+peer benchmarking, and AI-based anomaly detection.
+""")
 
 # --------------------------------------------------
 # COMPANY SNAPSHOT
@@ -128,12 +96,12 @@ Identify potentially non–arm’s length related-party transactions using
 st.subheader("📊 Company Financial Snapshot")
 
 c1, c2, c3 = st.columns(3)
-c1.metric("Revenue (₹ Cr)", f"{filtered_df['Revenue'].values[0]:,.0f}")
-c2.metric("EBITDA (₹ Cr)", f"{filtered_df['EBITDA'].values[0]:,.0f}")
-c3.metric("Total Assets (₹ Cr)", f"{filtered_df['Total_Assets'].values[0]:,.0f}")
+c1.metric("Revenue", f"₹ {filtered_df['Revenue'].values[0]:,.0f}")
+c2.metric("EBITDA", f"₹ {filtered_df['EBITDA'].values[0]:,.0f}")
+c3.metric("Total Assets", f"₹ {filtered_df['Total_Assets'].values[0]:,.0f}")
 
 # --------------------------------------------------
-# AI RISK SCORE (UNCHANGED)
+# AI RISK SCORE — NORMALIZED (0–1)
 # --------------------------------------------------
 rpt_features = [
     "RPT_Sales_Ratio",
@@ -194,25 +162,13 @@ with tab1:
         title="Company-Level RPT Ratios",
         color="Metric"
     )
-    fig1.update_layout(
-        title_font_size=34,
-        xaxis_title_font_size=26,
-        yaxis_title_font_size=26,
-        xaxis_tickfont_size=22,
-        yaxis_tickfont_size=22,
-        legend_font_size=22
-    )
+    fig1.update_layout(title_font_size=26)
     st.plotly_chart(fig1, use_container_width=True)
 
     fig_box = px.box(
         peer_df,
         y="RPT_Purchase_Ratio",
         title="Peer Distribution: RPT Purchase Ratio"
-    )
-    fig_box.update_layout(
-        title_font_size=30,
-        yaxis_title_font_size=26,
-        yaxis_tickfont_size=22
     )
     st.plotly_chart(fig_box, use_container_width=True)
 
@@ -221,20 +177,14 @@ with tab1:
         y=peer_scores,
         title="Anomaly Score Distribution (Isolation Forest)"
     )
-    fig_iso.update_layout(
-        title_font_size=30,
-        xaxis_tickfont_size=22,   # ✅ FIXED
-        yaxis_title_font_size=26,
-        yaxis_tickfont_size=22
-    )
     st.plotly_chart(fig_iso, use_container_width=True)
 
     st.subheader("🧠 AI Interpretation")
 
     if risk_state == "high":
-        st.error("• High related-party purchases vs peers")
+        st.error("High related-party purchases vs peers")
     elif risk_state == "medium":
-        st.warning("• Elevated loans/advances to related parties")
+        st.warning("Elevated loans/advances to related parties")
     else:
         st.success("No major related-party transaction anomalies detected.")
 
@@ -270,26 +220,12 @@ with tab2:
         barmode="group",
         title="Company vs Industry Arm’s Length Benchmark"
     )
-    fig2.update_layout(
-        title_font_size=34,
-        xaxis_title_font_size=26,
-        yaxis_title_font_size=26,
-        xaxis_tickfont_size=22,
-        yaxis_tickfont_size=22,
-        legend_font_size=22
-    )
+    fig2.update_layout(title_font_size=26)
     st.plotly_chart(fig2, use_container_width=True)
 
     fig_heat = px.imshow(
         pricing_compare.set_index("Metric"),
         title="Pricing Deviation Heatmap"
-    )
-    fig_heat.update_layout(
-        title_font_size=30,
-        xaxis_title_font_size=26,  # ✅ FIXED
-        yaxis_title_font_size=26,  # ✅ FIXED
-        xaxis_tickfont_size=22,    # ✅ FIXED
-        yaxis_tickfont_size=22     # ✅ FIXED
     )
     st.plotly_chart(fig_heat, use_container_width=True)
 
@@ -298,13 +234,6 @@ with tab2:
         x="RPT_Expense_to_EBITDA",
         y="EBITDA_Margin",
         title="EBITDA vs RPT Expense Intuition"
-    )
-    fig_scatter.update_layout(
-        title_font_size=30,
-        xaxis_title_font_size=26,
-        yaxis_title_font_size=26,
-        xaxis_tickfont_size=22,
-        yaxis_tickfont_size=22
     )
     st.plotly_chart(fig_scatter, use_container_width=True)
 
